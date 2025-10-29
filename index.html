@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Nginx on Amazon ECS</title>
+</head>
+<body>
+        <div class="centered-text">
+
+        <h1>Nginx on Amazon ECS</h1>
+        
+        <img class="myImage" src="nginx.jpg" alt="Nginx on Amazon ECS" style="transition: transform 0.3s ease;" height="50%" width="50%">
+        
+        <h2>Project Overview:Deploying nginx on ECS Fargate with ALB & CloudWatch Monitoring</h2>
+        <p>To deploy a lightweight, scalable web application (nginx) using Amazon ECS with Fargate, expose it securely via an Application Load Balancer (ALB), and monitor its performance using Amazon CloudWatch. This project demonstrates cloud-native architecture, container orchestration, and observability best practices.</p>
+        
+        <h3>Steps taken to complets this project :</h3>
+            <h4>1. Create Security Groups</h4>
+            <br>
+            <img class="myImage" src="Screenshot (1).png" alt="Security Group" style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br> 
+            <p>- Inbound rule: Allow HTTP (TCP port 80) from 0.0.0.0/0 — this makes the ALB publicly accessible. <br>
+               - Outbound rule: Allow all (default) — ensures ALB can forward traffic to ECS tasks.</p>
+            <br>
+            <h4>2. Create a Target Group </h4>
+            <br>
+            <img class="myImage" src="Screenshot (2).png" alt="Target Group" style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <p>- Target type: IP — required for Fargate tasks. <br>
+               - Protocol: HTTP <br>
+               - Port: 80 <br>
+               - Health check path: / — checks if nginx is responding. <br>
+               - VPC: Select the same VPC as your ECS tasks.</p>
+            <br>
+            <h4>3. Create an Application Load Balancer</h4>
+            <br>
+            <img class="myImage" src="Screenshot (3).png" alt="Load balancer" style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <p>- Go to EC2 → Load Balancers → Create <br>
+               - Choose Application Load Balancer <br>
+               - Name: alb-nginx <br>
+               - Scheme: Internet-facing <br>
+               - Listener: HTTP on port 80 <br>
+               - Select VPC and public subnets <br>
+               - Assign the security group you created</p>
+            <br>
+            <h4>4. Create ECS Cluster</h4>
+            <br>
+            <img class="myImage" src="Screenshot (4).png" alt="Amazone ECS" style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <p>- Go to ECS > Clusters > Create Cluster <br>
+               - Choose “Networking only” (Fargate) <br>
+               - Name it nginx-cluster</p>
+            <br>
+            <h4>5. Create Task Definition</h4>
+            <br>
+            <img class="myImage" src="Screenshot (5).png" alt="Amazon ECS " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <p>- Launch type: Fargate <br>
+               - Task role: ecsTaskExecutionRole (or custom role with logging permissions) <br>
+               - Container name: nginx <br>
+               - Image: nginx (official Docker image) <br>
+               - Port mappings: 80 <br>
+               - CPU: 256 or 512 <br>
+               - Memory: 512 or 1024 <br>
+               - Log configuration: Use awslogs to send logs to CloudWatch</p>
+            <br>
+            <h4>6. Create ECS Service</h4>
+            <br>
+            <img class="myImage" src="Screenshot (6).png" alt="Amazon ECS " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (7).png" alt="Amazon ECS " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (8).png" alt="Amazon ECS " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <p>- Go to ECS → Cluster → Services → Create <br>
+               - Launch type: Fargate <br>
+               - Task definition: grafana-task <br>
+               - Number of tasks: 1 <br>
+                 Networking: <br>
+               - VPC: same as ALB <br>
+               - Subnets: public <br>
+               - Security group: same as ALB <br>
+                 Load balancer: <br>
+               - Type: Application Load Balancer <br>
+               - Select alb-nginx <br>
+               - Listener: port 80 <br>
+               - Target group: TG-nginx <br>
+               - Click Create Service</p>
+               <p>Once deployed, your nginx container will be accessible via the ALB DNS name. </p>
+            <br>
+            <h3>7. Create CloudWatch Dashboard</h3>
+            <br>
+            <img class="myImage" src="Screenshot (9).png" alt="Amazon CloudWatch " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (10).png" alt="Amazon CloudWatch " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (11).png" alt="Load balancer " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (12).png" alt="Nginx " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (13).png" alt="Nginx " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (14).png" alt="Nginx " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (15).png" alt="Amazon CloudWatch " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (16).png" alt="Amazon CloudWatch " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (17).png" alt="Amazon CloudWatch " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <img class="myImage" src="Screenshot (18).png" alt="Amazon CloudWatch " style="transition: transform 0.3s ease;" height="50%" width="50%">
+            <br>
+            <p>-Go to CloudWatch > Dashboards > Create dashboard <br>
+               - Name it nginx-dashboard <br>
+                  Add widgets: <br>
+               - Line widget for CPUUtilization <br>
+               - Line widget for MemoryUtilization <br>
+                  Metrics path: <br>
+               - ECS > Per-Task Metrics > Cluster: nginx-cluster > Service: nginx-service <br>
+                  <br>
+               This gives you real-time visibility into resource usage.</p>
+            </div>
+
+        <script src="javascript.js" charset="utf-8" ></script>
+
+</body>
+</html>
